@@ -61,7 +61,7 @@ Use the channel's stickman skill. First research (web search) what motivational 
    ```
    URL: `https://raw.githubusercontent.com/mjk42538-svg/kubrix-studio/uploads/<file>` (each channel's task pushes only its own file name; force-push replaces the branch, so upload right after pushing).
 2. Windsor `execute_action` youtube `upload_video` on the channel's account: `video_url`, `title` (<60 chars, curiosity), `description` (1–3 lines + question for comments + 3–5 hashtags incl. #shorts), `tags`, `made_for_kids: false`, `privacy_status: "private"`, `publish_at: "<today>T21:00:00+01:00"` (if already past 20:30 Madrid, use tomorrow 21:00).
-3. Windsor can't set thumbnails or pin comments: save `cover.jpg` and the pinned-comment text in the episode folder and list them in the message to the user.
+3. Thumbnail trick: design the FIRST frame of every video with the big 2–4 word cover title already on it (Luckiest Guy, white/yellow, black outline) over the hook image, so any auto-picked or user-picked early frame works as the cover. Windsor can't set thumbnails or pin comments: save `cover.jpg` and the pinned-comment text in the episode folder and list them in the message to the user.
 4. Reply to new comments on the channel's videos (Windsor `reply_to_comment`), short, friendly, in the channel's language.
 
 ## 6. Save + report
