@@ -1,0 +1,186 @@
+import numpy as np, wave, json
+SR = 44100
+T = json.load(open('work/timing_v2.json'))
+DUR = T['duration'] + 0.3
+N = int(DUR * SR)
+W = {w['i']: w['s'] for w in T['words']}
+rng = np.random.default_rng(7)
+
+def write(path, x):
+    x = np.clip(x, -1, 1)
+    st = np.stack([x, x], 1) if x.ndim == 1 else x
+    with wave.open(path, 'wb') as f:
+        f.setnchannels(2); f.setsampwidth(2); f.setframerate(SR); f.writeframes((st * 32767).astype(np.int16).tobytes())
+
+def add(buf, t, sig, g=1.0):
+    i = int(t * SR)
+    if i >= len(buf): return
+    if i < 0: sig = sig[-i:]; i = 0
+    n = min(len(sig), len(buf) - i); buf[i:i + n] += sig[:n] * g
+
+def env(n, a=0.005, d=0.3, curve=1.0):
+    t = np.arange(n) / SR
+    return np.minimum(1, t / max(a, 1e-4)) * np.exp(-t / d * curve)
+
+def tone(f, dur, kind='sine', a=0.005, d=0.4):
+    n = int(dur * SR); t = np.arange(n) / SR
+    if kind == 'sine': s = np.sin(2 * np.pi * f * t)
+    elif kind == 'bell': s = np.sin(2 * np.pi * f * t) + 0.45 * np.sin(2 * np.pi * f * 2.76 * t) * np.exp(-t * 6) + 0.25 * np.sin(2 * np.pi * f * 5.4 * t) * np.exp(-t * 12)
+    elif kind == 'pluck': s = np.sin(2 * np.pi * f * t) + 0.5 * np.sin(4 * np.pi * f * t) * np.exp(-t * 10) + 0.2 * np.sin(6 * np.pi * f * t) * np.exp(-t * 18)
+    elif kind == 'pad': s = sum(np.sin(2 * np.pi * f * (1 + dt) * t + p) for dt, p in [(0, 0), (0.004, 1), (-0.005, 2)]) / 3 + 0.25 * np.sin(4 * np.pi * f * t)
+    elif kind == 'brass': s = sum(np.sin(2 * np.pi * f * k * t) / k ** 1.3 for k in range(1, 7))
+    return s * env(n, a, d)
+
+def noise(dur): return rng.standard_normal(int(dur * SR))
+def lp(x, a):  # one-pole lowpass, a in 0..1 (smaller = darker)
+    y = np.empty_like(x); acc = 0.0
+    for i in range(len(x)): acc += a * (x[i] - acc); y[i] = acc
+    return y
+def lp_fast(x, k):
+    # moving-average lowpass (vectorised)
+    c = np.cumsum(np.concatenate([[0], x])); return (c[k:] - c[:-k]) / k
+def hp(x, k): return x - np.concatenate([lp_fast(x, k), np.zeros(k - 1)])[:len(x)]
+
+NOTE = lambda m: 440 * 2 ** ((m - 69) / 12)
+
+
+
+# ---------------- music (loopable) ----------------
+mus = np.zeros(N); sfx = np.zeros(N)
+w = lambda i: W[min(i, max(W))]
+def thud(t, g=1, f0=80):
+    n = int(0.14 * SR); tt = np.arange(n) / SR; f = f0 + 90 * np.exp(-tt * 40)
+    add(sfx, t, (np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt * 26) + lp_fast(np.concatenate([noise(0.14), np.zeros(10)]), 6)[:n] * np.exp(-tt * 45)), 0.35 * g)
+def whoosh(t, dur=0.4, g=1):
+    n = int(dur * SR); x = noise(dur); tt = np.arange(n) / SR
+    add(sfx, t, (hp(x, 3) * 0.3 + lp_fast(np.concatenate([x, np.zeros(40)]), 6)[:n]) * np.sin(np.pi * np.clip(tt / dur, 0, 1)) ** 1.5, 0.3 * g)
+def pop(t, g=1, f=600):
+    n = int(0.12 * SR); tt = np.arange(n) / SR; fr = f * (1 + 2 * np.exp(-tt * 40)); add(sfx, t, np.sin(2 * np.pi * np.cumsum(fr) / SR) * np.exp(-tt * 30), 0.4 * g)
+def beep(t, g=1):
+    for k in range(3): add(sfx, t + k * 0.18, np.sign(np.sin(2 * np.pi * 1760 * np.arange(int(0.09 * SR)) / SR)) * 0.5, 0.12 * g)
+def splat(t, g=1): add(sfx, t, lp_fast(np.concatenate([noise(0.35), np.zeros(20)]), 14)[:int(0.35 * SR)] * env(int(0.35 * SR), 0.002, 0.08) * 4, 0.3 * g)
+def flap(t, g=1):
+    for k in range(6): add(sfx, t + k * 0.09, hp(noise(0.06), 3) * env(int(0.06 * SR), 0.003, 0.02), 0.15 * g)
+def bell(t, g=1):
+    for m, a in [(45, 1), (57, 0.5), (64, 0.3), (69, 0.2)]: add(sfx, t, tone(NOTE(m), 4, 'bell', 0.003, 1.6), 0.25 * g * a)
+def glass(t, g=1):
+    for i in range(14): add(sfx, t + rng.random() * 0.35, tone(2200 + rng.random() * 2800, 0.4, 'bell', 0.001, 0.12), 0.06 * g)
+    add(sfx, t, hp(noise(0.6), 2) * env(int(0.6 * SR), 0.002, 0.2), 0.25 * g)
+def tape(t, dur=2.5, g=1):
+    n = int(dur * SR); tt = np.arange(n) / SR; f = 300 + 900 * (tt / dur)
+    s = np.sign(np.sin(2 * np.pi * np.cumsum(f) / SR)) * 0.2 + hp(noise(dur), 3) * 0.3
+    add(sfx, t, s * np.minimum(1, tt / 0.1) * np.minimum(1, (dur - tt) / 0.2), 0.18 * g)
+def sub(t, g=1):
+    n = int(1.8 * SR); tt = np.arange(n) / SR; f = 50 + 20 * np.exp(-tt * 4)
+    add(sfx, t, np.tanh(2.5 * np.sin(2 * np.pi * np.cumsum(f) / SR)) * np.exp(-tt * 1.6), 0.6 * g)
+def ting(t, g=1): add(sfx, t, tone(NOTE(96), 0.9, 'bell', 0.001, 0.35), 0.18 * g)
+# ---------- instruments ----------
+def kick(t, g=1):
+    n = int(0.3 * SR); tt = np.arange(n) / SR; f = 48 + 100 * np.exp(-tt * 35)
+    add(mus, t, np.tanh(1.5 * np.sin(2 * np.pi * np.cumsum(f) / SR)) * np.exp(-tt * 9), 0.42 * g)
+def taiko(t, g=1):
+    n = int(0.6 * SR); tt = np.arange(n) / SR; f = 70 + 60 * np.exp(-tt * 20)
+    add(mus, t, (np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-tt * 6) + 0.3 * lp_fast(np.concatenate([noise(0.6), np.zeros(10)]), 8)[:n] * np.exp(-tt * 30)), 0.5 * g)
+def wood(t, g=1): add(mus, t, tone(1200, 0.08, 'sine', 0.001, 0.02) + tone(1900, 0.08, 'sine', 0.001, 0.015), 0.12 * g)
+def hat(t, g=1): add(mus, t, hp(noise(0.05), 2) * env(int(0.05 * SR), 0.001, 0.015), 0.05 * g)
+def zheng(m, t, g=1, d=0.5):  # guzheng-like pluck with slight bend
+    n = int(1.2 * SR); tt = np.arange(n) / SR; f = NOTE(m) * (1 + 0.012 * np.exp(-tt * 18))
+    ph = 2 * np.pi * np.cumsum(f) / SR; s = np.sin(ph) + 0.45 * np.sin(2 * ph) * np.exp(-tt * 6) + 0.2 * np.sin(3 * ph) * np.exp(-tt * 10)
+    add(mus, t, s * env(n, 0.002, d), 0.11 * g)
+def erhu(m, t, dur, g=1):
+    n = int(dur * SR); tt = np.arange(n) / SR; f = NOTE(m) * (1 + 0.007 * np.sin(2 * np.pi * 5.5 * tt) * np.minimum(1, tt / 0.3))
+    ph = 2 * np.pi * np.cumsum(f) / SR; s = sum(np.sin(k * ph) / k ** 1.6 for k in range(1, 6))
+    add(mus, t, s * np.minimum(1, tt / 0.12) * np.minimum(1, (dur - tt) / 0.2), 0.07 * g)
+def pad(m, t, dur, g=1):
+    n = int(dur * SR); tt = np.arange(n) / SR; s = tone(NOTE(m), dur, 'pad', 0.5, 99)
+    add(mus, t, s * np.minimum(1, tt / 0.6) * np.minimum(1, (dur - tt) / 0.6), 0.05 * g)
+def bass(m, t, g=1): add(mus, t, tone(NOTE(m), 0.4, 'pluck', 0.004, 0.18), 0.22 * g)
+def gong(t, g=1):
+    n = int(4 * SR); tt = np.arange(n) / SR
+    s = sum(np.sin(2 * np.pi * f * tt * (1 + 0.02 * np.exp(-tt))) * np.exp(-tt * d) * a for f, d, a in [(110, 0.6, 1), (164, 0.8, 0.6), (231, 1.1, 0.4), (347, 1.5, 0.3), (523, 2.2, 0.2)])
+    add(sfx, t, s * np.minimum(1, tt / 0.01), 0.35 * g)
+PENT = [62, 64, 66, 69, 71, 74, 76, 78, 81, 83]  # D major pentatonic
+def section(t0, t1, kind):
+    bpm = {'epic': 120, 'adv': 112, 'party': 128, 'sad': 70, 'journey': 96, 'mystic': 84, 'tense': 100, 'storm': 60}[kind]; b = 60 / bpm; t = t0; i = 0
+    while t < t1:
+        bi = i % 16
+        if kind in ('epic',):
+            if bi % 2 == 0: taiko(t, 1 if bi % 4 == 0 else 0.6)
+            if bi in (3, 7, 11, 14, 15): taiko(t + b / 2, 0.5)
+            zheng(PENT[(i * 3) % 10] + 12, t, 0.8); zheng(PENT[(i * 3 + 2) % 10] + 12, t + b / 2, 0.6)
+            if bi % 8 == 0: bass(50, t); pad(62, t, b * 8, 0.8)
+        elif kind in ('adv', 'party'):
+            if bi % 4 == 0: kick(t)
+            if bi % 4 == 2: wood(t); taiko(t, 0.35)
+            hat(t + b / 2)
+            mel = [74, 76, 78, 81, 78, 76, 74, 71, 69, 71, 74, 76, 74, 71, 69, 66]
+            zheng(mel[bi], t, 0.9 if kind == 'adv' else 1.0)
+            if kind == 'party': zheng(mel[(bi + 4) % 16] + 12, t + b / 2, 0.5); wood(t + b / 2, 0.6)
+            if bi % 4 == 0: bass([50, 47, 45, 43][(i // 4) % 4], t)
+            if bi % 16 == 0: pad([62, 59, 57, 55][(i // 16) % 4], t, b * 16, 0.7)
+        elif kind == 'sad':
+            if bi % 8 == 0: pad([62, 57, 59, 54][(i // 8) % 4], t, b * 8, 1.2); bass([38, 33, 35, 30][(i // 8) % 4], t, 0.6)
+            if bi % 4 == 0: erhu([74, 71, 69, 66, 69, 71, 66, 64][(i // 4) % 8], t, b * 3.8, 1.1)
+        elif kind in ('journey', 'mystic'):
+            zheng(PENT[[0, 3, 5, 3, 1, 4, 6, 4][bi % 8]] + (12 if kind == 'mystic' else 0), t, 0.7)
+            if bi % 4 == 0: kick(t, 0.6 if kind == 'journey' else 0); taiko(t, 0.25)
+            if bi % 16 == 0: pad([62, 57][(i // 16) % 2], t, b * 16, 1.0)
+            if kind == 'mystic' and bi % 8 == 4: erhu(PENT[(i // 8) % 6 + 3], t, b * 3, 0.8)
+        elif kind == 'tense':
+            if bi % 2 == 0: taiko(t, 0.7)
+            if bi % 4 == 0: pad(50, t, b * 4, 1.3)
+            if bi % 2 == 1: zheng(63 if bi % 4 == 1 else 62, t, 0.6)
+        elif kind == 'storm':
+            if bi % 2 == 0: kick(t, 0.8); kick(t + 0.22, 0.5)
+            if bi % 8 == 0: pad(38, t, b * 8, 1.6); pad(44, t, b * 8, 0.9)
+        t += b / (2 if kind in ('adv', 'party', 'epic', 'journey', 'mystic') else 1); i += 1
+D = T['duration']
+section(0, w(16), 'epic')
+section(w(16), w(129), 'adv')
+section(w(129), w(139), 'party')
+section(w(139), w(168), 'sad')
+section(w(168), w(188), 'journey')
+section(w(188), w(240), 'mystic')
+section(w(240), w(256), 'adv')
+section(w(256), w(284), 'tense')
+section(w(284), w(292), 'journey')
+section(w(292), D + 0.3, 'storm')
+# ---------- sfx ----------
+def crack(t, g=1): add(sfx, t, hp(noise(0.25), 2) * env(int(0.25 * SR), 0.001, 0.05), 0.4 * g); thud(t, 0.6 * g, 120)
+def rise(t, dur=0.8, g=1):
+    n = int(dur * SR); tt = np.arange(n) / SR; f = 300 * 2 ** (3 * tt / dur)
+    add(sfx, t, (np.sin(2 * np.pi * np.cumsum(f) / SR) * 0.4 + hp(noise(dur), 2) * 0.3) * (tt / dur) ** 1.5, 0.25 * g)
+def roar(t0, t1, g=1):
+    n = int((t1 - t0) * SR); x = lp_fast(np.concatenate([noise(t1 - t0), np.zeros(30)]), 25)[:n]; tt = np.arange(n) / SR
+    add(sfx, t0, x * np.minimum(1, tt / 0.4) * np.minimum(1, (t1 - t0 - tt) / 0.4) * 2.5, 0.35 * g)
+def splash(t, g=1): add(sfx, t, (hp(noise(0.7), 3) * 0.6 + lp_fast(np.concatenate([noise(0.7), np.zeros(10)]), 10)[:int(0.7 * SR)] * 2) * env(int(0.7 * SR), 0.005, 0.25), 0.4 * g)
+def cheer(t, dur=1.5, g=1):
+    for k in range(10): erhu_like = None; add(sfx, t + rng.random() * 0.3, tone(500 + rng.random() * 500, dur * 0.6, 'sine', 0.05, 0.4) * (1 + 0.3 * np.sin(np.arange(int(dur * 0.6 * SR)) / SR * 40)), 0.03 * g)
+    add(sfx, t, hp(noise(dur), 3) * np.minimum(1, np.arange(int(dur * SR)) / SR / 0.1) * np.exp(-np.arange(int(dur * SR)) / SR / (dur * 0.5)), 0.12 * g)
+def thunder(t, g=1):
+    n = int(2.5 * SR); tt = np.arange(n) / SR; x = lp_fast(np.concatenate([noise(2.5), np.zeros(80)]), 60)[:n]
+    add(sfx, t, x * np.exp(-tt * 1.6) * (1 + 0.6 * np.sin(tt * 23)) * 8, 0.35 * g); crack(t, 0.5 * g)
+wi = w
+thud(wi(6) + 0.25, 0.9, 200); ting(wi(6) + 0.27, 1.0)
+whoosh(wi(7) - 0.1, 0.5); gong(wi(13), 0.7); thud(wi(12) + 0.15, 1.0)
+tape(wi(16) - 0.05, 0.4, 0.8)
+rise(wi(33), max(0.4, wi(36) - wi(33))); crack(wi(36)); sub(wi(36), 0.6); pop(wi(40), 1.0, 500)
+for k in range(3): thud(wi(45) + k * 0.2, 0.5, 400)
+rise(wi(52) - 0.2, 0.7, 1.2); sub(wi(53), 0.8)
+splat(wi(69) + 0.15, 1.0); sub(wi(83), 1.0)
+roar(wi(84) - 0.1, wi(107) + 0.5, 1.0)
+whoosh(wi(106) - 0.2, 0.6, 1.2); splash(wi(106) + 0.5, 1.2)
+crack(wi(119), 0.9)
+gong(wi(127), 1.0); cheer(wi(126), 2.0)
+for k in range(8): thud(wi(168) + k * 0.52, 0.45, 300)
+roar(wi(172), wi(188), 0.6)
+for k in range(4): whoosh(wi(222) + k * max(0.2, (wi(224) - wi(222)) / 4), 0.25, 0.7); pop(wi(222) + k * max(0.2, (wi(224) - wi(222)) / 4) + 0.05, 0.8, 700 + k * 150)
+whoosh(wi(226), 0.6, 1.3); whoosh(wi(228), 0.5, 1.0); whoosh(wi(230), 1.2, 1.0); ting(wi(232))
+pop(wi(249) - 0.05, 1.0, 500); cheer(wi(249) + 0.2, 1.4)
+taiko_t = wi(258); sub(wi(259), 1.0); thud(wi(259), 1.0, 90)
+sub(wi(276) + 0.4, 1.3); thud(wi(276) + 0.4, 1.0, 60)
+whoosh(wi(286), 1.0, 1.2); thud(wi(292) + 0.4, 0.9)
+thunder(wi(296) - 0.2, 1.0); thunder(wi(303), 1.2); gong(wi(305), 0.9); sub(wi(305), 0.8)
+write('audio/music.wav', mus / np.abs(mus).max() * 0.9)
+write('audio/sfx.wav', sfx / np.abs(sfx).max() * 0.9)
+print('ok', DUR)

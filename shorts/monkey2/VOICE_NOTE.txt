@@ -1,0 +1,1 @@
+Part 2 voice generated on ElevenLabs 26 Nov (flow XH2A100leVU1BknjQNnU, generation UttUTcfMjjCn1YpZt93c) — download its full_res_url via creative_get_generations instead of regenerating.
