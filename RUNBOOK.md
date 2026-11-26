@@ -20,7 +20,7 @@ Three YouTube channels, one Short per channel per day, all published at **21:00 
 ## 1. Before making anything
 - Read `office/<channel>/channel.md`, `lessons.md`, the last lines of `used.md`, `stats/log.md`.
 - **Credits:** call ElevenLabs `account_get_usage`. Each Short costs ~1,200–1,400 credits.
-  If fewer than 1,500 remain: do NOT generate; message the user (SendUserMessage) and stop.
+  If fewer than 1,500 remain: do NOT use ElevenLabs. Switch to the FREE fallback (section 2b) and keep producing; mention it in the summary.
   Never call creative_generate_speech twice for the same line (each call charges).
 - Retention: pull yesterday's numbers with Windsor `get_data` (youtube, the channel's account) and log them; write 1–3 lessons when the data supports them.
 
@@ -31,6 +31,14 @@ Three YouTube channels, one Short per channel per day, all published at **21:00 
 - Wait ~30 s, then `creative_get_generations` → `full_res_url` → `curl -sL -o audio/voice.mp3 "<url>"`.
   Needs the domain `elevenlabsusercontent.com` allowed (Settings → Capabilities). If curl gets 403: tell the user that domain must be allowed, and stop.
 - Scripts: 60–75 s (≈1,100–1,300 characters). Line 1 = the strangest moment. Joke/beat every 3–5 s. End with a cliffhanger / "Part N+1. Follow so you don't miss it." (Kubrix) or a strong loop line (motivational).
+
+## 2b. Free voice fallback (when ElevenLabs credits run out; the user approved this)
+The user finds flat TTS too robotic, so pick the most EXPRESSIVE free option that works here:
+1. Check `office/voice_fallback.md` first: if a previous run already chose and tested an engine, reuse it (same voice every day per channel).
+2. Otherwise web-search for the best current free, open-source, expressive TTS whose license allows commercial use (e.g. Chatterbox (MIT, emotion control), Kokoro (Apache-2.0), or newer ones). Only use packages from pip/npm/GitHub releases; never run unknown installers or anything that asks for account credentials.
+   Model weights hosted on huggingface.co need that domain allowed in Settings → Capabilities; if the download is refused, use an engine whose files come from GitHub releases (Kokoro works: `pip install kokoro-onnx soundfile` + `kokoro-v1.0.int8.onnx` and `voices-v1.0.bin` from github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/; English voices am_puck/am_echo/am_michael/am_fenrir, Spanish em_alex/em_santa).
+3. Make it as expressive as possible: generate line by line, vary speed per line (faster for excitement, slower for drama), insert real pauses, and pick the most energetic voice.
+4. Write what you chose (engine, voice per channel, settings, license) to `office/voice_fallback.md` and commit it, and tell the user in the summary that a free voice was used and which.
 
 ## 3. Kubrix episode (3D engine)
 Series: **Monkey King, 5 parts** (P1 published 26 Nov). Next: P2 (script + voice ready in `shorts/monkey2/`), P3 Heaven's Worst Job, P4 War With Heaven, P5 The Palm (cliffhanger → next series). After P5 start a new multi-part original story; the channel hero **Benny** (blue shirt, red scarf, teal hair streak) appears in some episodes.
