@@ -1,1 +1,1 @@
-Part 2 voice generated on ElevenLabs 26 Nov (flow XH2A100leVU1BknjQNnU, generation UttUTcfMjjCn1YpZt93c) — download its full_res_url via creative_get_generations instead of regenerating.
+Part 2 voice is ALREADY downloaded: shorts/monkey2/audio/voice.mp3 (83.2 s, Salva, eleven_v4). Do NOT generate it again. Script: shorts/monkey2/script.txt (tagged: script_tagged_short.txt).
