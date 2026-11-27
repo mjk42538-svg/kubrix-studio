@@ -1,1 +1,2 @@
 # Used episodes
+- 2026-11-27 · "Tu cerebro no quiere que triunfes" · tema: falta de ganas / el cerebro ahorra energía · hook "tu cerebro no quiere que triunfes, quiere que sobrevivas" · dato 2% peso / 20% energía · giro "las ganas llegan después de empezar" · historia dos personas, martes 19:00, zapatillas, 2 minutos · metáfora chispa/humo/fuego · loop "...recuerda:" → primera frase · upload FAILED (YouTube rate limit)
