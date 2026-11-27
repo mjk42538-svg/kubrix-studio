@@ -5,3 +5,6 @@
   Not visible via Windsor (trial plan has no force refresh); user must check YouTube Studio and upload by hand if missing.
 - Comments: replied to 3 new comments on V-pQaA0qqac.
 - ElevenLabs: 924 credits used, 11,643 left.
+- 14:58 Madrid: user confirmed the video is NOT in YouTube Studio. Re-hosted the file (uploads branch now keeps other channels' files; commit-pinned URL
+  https://raw.githubusercontent.com/mjk42538-svg/kubrix-studio/82077479f8b2242d89fb06c027280dd714c71a84/nme_monday.mp4) and retried: same "rate-limited" error.
+  Sent the mp4 to the user for a manual upload.
