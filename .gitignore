@@ -1,0 +1,6 @@
+node_modules
+shorts/*/frames/
+shorts/*/stills/
+shorts/*/out/*.mp4
+shorts/*/audio/*.wav
+shorts/*/render.log

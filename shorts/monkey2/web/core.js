@@ -1,0 +1,1 @@
+../../bear/web/core.js
