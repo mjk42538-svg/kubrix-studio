@@ -6,3 +6,5 @@
 5. Keep series parts 60–75 s (Monkey King P1 is 1:40; watch its % viewed against the ~60 s videos).
 6. (27 Nov data) The story with a clear personal stake ("Mine Got Stolen") has the best retention (55% APV) and the most likes; the meme-only video kept 45% and only 18 s. Keep a personal stake in line 1.
 7. +6 subs in one day right after the first series part went out: keep the series cadence daily and always end with "Part N+1" + a pinned comment.
+8. (28 Nov data) Series parts get the fastest start yet: P2 hit 1,175 views and 23 likes in ~15 h, and the channel gained +5 subs that day. Keep one part per day and the "Part N+1" line.
+9. Process: before rebuilding an episode, check the channel's video list (Windsor `video_title`/`published_at`). P2 was already live (the user uploaded it by hand after the rate-limit failure); trust the channel, not only used.md.

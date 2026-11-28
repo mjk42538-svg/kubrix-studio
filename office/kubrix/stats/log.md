@@ -1,4 +1,8 @@
 # Stats log (newest first)
+- 2026-11-28 11:00 UTC · channel snapshot: 6,727 total views (+142 vs 27 Nov snapshot; the channel total lags the per-video counters) · 23 subscribers (+5) · 6 public videos
+  - Lifetime per video (Data API): Monkey King P2 1,175 views / 23 likes in ~15 h (published by the user 27 Nov 21:05 Madrid) · P1 1,343 views / 38 likes · Don't Swipe 1,449 · HUSS party 1,501 · One Wish 1,360 · Danced Itself Sick 1,329
+  - Last 7 days (Analytics, P1/P2 not in rows yet): One Wish 54.3% APV (46.8 s) · Don't Swipe 53.3% (37.5 s) · HUSS 50.2% (42.4 s) · Danced 45.2% (18.4 s)
+  - New comment: @VictorSalz-t8o on P2 ("Holy reference to monke king") → replied
 - 2026-11-27 12:00 · channel snapshot: 6,585 total views (+1,574 vs 26 Nov) · 18 subscribers (+6) · 5 public videos
   - Last 7 days per video (Windsor): One Wish 1,223 views, 55.3% APV (47.7 s), 21 likes, +3 subs · HUSS party 1,319 views, 49.6% APV (41.6 s), +4 subs · Danced Itself Sick 1,035 views, 45.1% APV (18.4 s), +1 sub
   - Monkey King P1 (published 26 Nov) not in the per-video rows yet (analytics lag ~2 days)

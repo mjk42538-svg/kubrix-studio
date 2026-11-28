@@ -1,0 +1,1 @@
+Part 4 script DRAFT written 28 Nov by the daily run (not voiced yet). Next run: generate ONE take with Salva from script_tagged.txt (eleven_v4, generations_count 1), save as audio/voice.mp3, then build like monkey3 (copy web/, reuse mworld3 heaven sets + army).

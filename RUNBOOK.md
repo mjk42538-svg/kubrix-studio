@@ -41,7 +41,7 @@ The user finds flat TTS too robotic, so pick the most EXPRESSIVE free option tha
 4. Write what you chose (engine, voice per channel, settings, license) to `office/voice_fallback.md` and commit it, and tell the user in the summary that a free voice was used and which.
 
 ## 3. Kubrix episode (3D engine)
-Series: **Monkey King, 5 parts** (P1 published 26 Nov). Next: P2 (script + voice ready in `shorts/monkey2/`), P3 Heaven's Worst Job, P4 War With Heaven, P5 The Palm (cliffhanger → next series). After P5 start a new multi-part original story; the channel hero **Benny** (blue shirt, red scarf, teal hair streak) appears in some episodes.
+Series: **Monkey King, 5 parts** (P1 26 Nov, P2 27 Nov, P3 Heaven's Worst Job 28 Nov). Next: P4 War With Heaven (script DRAFT in `shorts/monkey4/`, not voiced), P5 The Palm (cliffhanger → next series). Before building, check the channel's video list in Windsor so you never rebuild a part that is already live. After P5 start a new multi-part original story; the channel hero **Benny** (blue shirt, red scarf, teal hair streak) appears in some episodes.
 1. New project `shorts/<slug>/` = copy of the previous part (`web/story.js`, `cast.js`, `mworld.js`, audio script). Shared engine files are symlinks into `shorts/bear/web/`.
 2. `python3 timing.py audio/voice.mp3 script.txt --out work` (convert to wav first) → `python3 voice_v2.py` (edit DRAMA word indices) → `python3 envelope.py`.
 3. Write shots in `web/story.js` (word-indexed; see Part 1 for every pattern). Preview: `python3 mids.py timing_v2.json` → `node render.mjs stills/a "<frames>"` → `python3 sheet.py stills/a stills/a.jpg 10 220` → LOOK at the sheet; fix blocked cameras, out-of-frame characters, blown-out poofs, too-dark shots.

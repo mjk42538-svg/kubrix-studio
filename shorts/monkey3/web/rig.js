@@ -1,0 +1,1 @@
+../../bear/web/rig.js
