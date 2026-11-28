@@ -1,2 +1,3 @@
 # Stats log
 - 2026-11-27: Windsor per-video analytics for 126748 returned no rows (last 7/28 days; trial = 30-day history). Comments seen: 5 in last 7 days (V-pQaA0qqac overtime/automation Short drew 3 debate comments — strongest engagement so far; ExLzibhD388 "Gonna post this on my story"). Channel snapshot (26 Nov): 6 subs, 2,422 views, 3 videos.
+- 2026-11-28: Windsor last 28 days, account 126748: V-pQaA0qqac "Why the Guy Who Leaves at 5PM Gets Promoted" 976 views, 28 likes, 2 comments, 59.2% avg viewed (49.2 s), +1 sub; NCcucWE30NI "trazo mental motivacion vs disciplina FINAL" 1,441 views, 39 likes, 55.2% viewed (37.3 s), +3 subs (a Spanish TrazoMental-titled video appears on this English channel). Comments last 7 days: 6, all already replied.
