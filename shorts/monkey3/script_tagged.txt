@@ -1,15 +1,16 @@
-[excited] Heaven sent me a job offer. Me. The monkey who erased his own death.
-[storytelling] The Jade Emperor smiled. "Welcome! You'll be... Keeper of the Heavenly Horses."
-[proud] I had a fancy hat. A fancy desk. A thousand horses. I was so proud.
+[nervous] A hundred thousand soldiers are surrounding my house. [sheepish] And honestly? I deserve it.
+[storytelling] It started with a job offer. From heaven. To me, the monkey who erased his own death.
+[warmly] The Jade Emperor smiled. "Welcome! You'll be... Keeper of the Heavenly Horses."
+[proud] I got a fancy hat. A fancy desk. A thousand horses. I was so proud.
 [laughs] Then a guard laughed. "That's the lowest job in heaven. You're a stable boy."
 [deadpan] Stable. Boy.
-[angry] I kicked over the desk, flew home, and made a giant flag: "Great Sage, Equal to Heaven."
+[angry] I kicked over the desk, flew home, and painted a giant flag: "Great Sage, Equal to Heaven."
 [cocky] Heaven sent an army. I sent them back... upside down.
 [sarcastic] So the Emperor tried again. "Fine! Guard my Peach Garden."
-[whispers] These peaches ripen once every three thousand years. Eat one... and you live forever.
+[whispers] These peaches grow once every three thousand years. Eat one... and you live forever.
 [mischievously] I ate one. Then another. Then... all of them.
-[laughing] Then I found a party nobody invited me to. So I drank all their wine.
-[storytelling] Then I wandered into Laozi's lab and ate his pills of immortality. Like candy.
+[laughing] Then I found a party nobody invited me to. So I drank all their juice.
+[storytelling] Then I walked into Laozi's lab and ate his pills of immortality. Like candy.
 [sleepy] I woke up. Burped. [nervous] And the sky turned gold.
-[ominous] A hundred thousand soldiers were standing around my mountain.
-[urgent] Part four. Follow so you don't miss it.
+[ominous] Which brings us back to the hundred thousand soldiers.
+[urgent] Part four: me versus all of heaven. Follow so you don't miss it.

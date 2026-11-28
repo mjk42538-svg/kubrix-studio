@@ -1,1 +1,1 @@
-Part 3 script DRAFT written 27 Nov by the daily run (not voiced yet). Next run: generate ONE take with Salva from script_tagged.txt (eleven_v4), save as audio/voice.mp3, then build like monkey2.
+Part 3 voice downloaded Sat Nov 28 10:53:44 UTC 2026 (Salva, eleven_v4, 77.8 s, flow tnqnI3hEu3o5TksU7rp8). Do NOT generate again.
